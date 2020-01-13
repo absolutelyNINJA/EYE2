@@ -1,0 +1,113 @@
+<html>
+<head>
+<!--
+The MIT License
+
+Copyright © 2015-2017 A-Frame authors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+ -->
+<!-- <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script> -->
+</head>
+<body>
+<a-scene>
+    <a-assets>
+        <canvas id="scene"></canvas>
+        <canvas id="destructed"></canvas>
+        <video id="scenery" playsinline crossorigin="anonymous" style="display:none;"></video>
+    </a-assets>
+  <!-- <a-sky src="#scenery" material="shader:glitch;" time-updater></a-sky> -->
+  <a-sky src="#destructed"></a-sky>
+</a-scene>
+
+<script>
+// Prefer camera resolution nearest to 1280x720.
+const AAAAAA  = 512;
+var constraints = {
+    audio: false,
+    video: {
+        width: AAAAAA,
+        height: AAAAAA,
+        facingMode: "environment",
+        frameRate: { ideal: 10, max: 15 }
+    }
+};
+
+navigator.mediaDevices.getUserMedia(constraints)
+.then(function(mediaStream) {
+    var video = document.querySelector('video');
+    video.mozSrcObject = mediaStream;
+    video.srcObject = mediaStream;
+    video.src = mediaStream;
+    video.onloadedmetadata = function(e) {
+        video.play();
+    };
+})
+.catch(function(err) { console.log(err.name + ": " + err.message); });
+
+let waaaaa = document.getElementById('scene');
+waaaaa.width = AAAAAA;
+waaaaa.height = AAAAAA;
+let resu = document.getElementById('destructed')
+resu.width = AAAAAA;
+resu.height = AAAAAA;
+var ctx = waaaaa.getContext('2d')
+var rctx = resu.getContext('2d')
+var video = document.querySelector('video');
+
+var timerCallback = function(){
+    var temp = []
+    var imageData;
+    var data = []
+    var data_ = []
+        ctx.drawImage(video, 0, 0, waaaaa.width, waaaaa.height);
+        imageData = ctx.getImageData(0,0,waaaaa.width, waaaaa.height);
+        data = imageData.data;
+        for (var i = 0; i < data.length; i += 4) {
+          temp.push(`${data[i]},${data[i+1]},${data[i+2]},${data[i+3]}`)
+          //data[i]=red,i+1=green,i+2=blue,i+4=alpha
+        }
+        for(var i = temp.length - 1; i > 0; i--){//deckの中身をシャッフルする
+            let r = Math.floor(Math.random() * (i + 1));
+            let tmp = temp[i];
+            temp[i] = temp[r];
+            temp[r] = tmp;
+        }
+        temp.forEach(function(item){
+            item.split(',').forEach(function(hehe){
+                data_.push(hehe)
+            })
+        })
+        for(i=0;i<data.length;i++){
+            data[i]=data_[i]
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        rctx.drawImage(waaaaa, AAAAAA,AAAAAA)
+        var a = this;
+}
+
+var ok = setInterval(function(){
+     timerCallback()
+     console.log('aaa')
+ },8)
+</script>
+
+</body>
+</html>
